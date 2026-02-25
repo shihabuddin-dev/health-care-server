@@ -1,45 +1,54 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 import { SpecialtyService } from "./specialty.service";
+import { catchAsync } from "../../shared/catchAsync";
+import { sendResponse } from "../../shared/sendResponse";
 
-const createSpecialty = async (req: Request, res: Response) => {
-  try {
-    const payload = req.body;
-    const result = await SpecialtyService.createSpecialty(payload);
-    res.status(201).json({
-      success: true,
-      message: "Specialty created successfully",
-      data: result,
-    });
-  } catch (err: any) {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      message: "Failed to Create specialties",
-      error: err.message,
-    });
-  }
-};
+const createSpecialty = catchAsync(async (req: Request, res: Response) => {
+  const result = await SpecialtyService.createSpecialty(req.body);
+  sendResponse(res, {
+    httpStatusCode: 201,
+    success: true,
+    message: "Specialty created successfully",
+    data: result,
+  });
+});
 
-const getAllSpecialties = async (req: Request, res: Response) => {
-  try {
-    const result = await SpecialtyService.getAllSpecialties();
-    res.status(200).json({
-      success: true,
-      message: "Specialties retrieved successfully",
-      data: result,
-    });
-  } catch (err: any) {
-    console.log(err);
-    res.status(500).json({
-      success: false,
-      message: "Failed to retrieve specialties",
-      error: err.message,
-    });
-  }
-};
+const getAllSpecialties = catchAsync(async (req: Request, res: Response) => {
+  const result = await SpecialtyService.getAllSpecialties();
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Specialty fetched successfully",
+    data: result,
+  });
+});
+
+const updateSpecialty = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const payload = req.body;
+  const result = await SpecialtyService.updateSpecialty(payload, id as string);
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Specialty updated successfully",
+    data: result,
+  });
+});
+
+const deleteSpecialty = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const result = await SpecialtyService.deleteSpecialty(id as string);
+  sendResponse(res, {
+    httpStatusCode: 200,
+    success: true,
+    message: "Specialty deleted successfully",
+    data: result,
+  });
+});
 
 export const SpecialtyController = {
   createSpecialty,
   getAllSpecialties,
+  updateSpecialty,
+  deleteSpecialty,
 };
