@@ -1,4 +1,12 @@
 -- CreateTable
+CREATE TABLE "Patient" (
+    "id" TEXT NOT NULL,
+    "name" VARCHAR(200) NOT NULL,
+
+    CONSTRAINT "Patient_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "specialties" (
     "id" TEXT NOT NULL,
     "title" VARCHAR(100) NOT NULL,

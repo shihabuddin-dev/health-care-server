@@ -1,0 +1,4 @@
+model Patient{
+    id String @id @default(uuid(7))
+    name String @db.VarChar(200)
+}
