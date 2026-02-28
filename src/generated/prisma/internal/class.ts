@@ -17,8 +17,8 @@ import type * as Prisma from "./prismaNamespace"
 
 const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
-  "clientVersion": "7.4.1",
-  "engineVersion": "55ae170b1ced7fc6ed07a15f110549408c501bb3",
+  "clientVersion": "7.4.2",
+  "engineVersion": "94a226be1cf2967af2541cca5529f0f7ba866919",
   "activeProvider": "postgresql",
   "inlineSchema": "model User {\n  id                 String     @id\n  name               String\n  email              String\n  emailVerified      Boolean    @default(false)\n  role               Role       @default(PATIENT)\n  status             UserStatus @default(ACTIVE)\n  needPasswordChange Boolean    @default(false)\n  isDeleted          Boolean    @default(false)\n  deletedAt          DateTime?\n  image              String?\n  createdAt          DateTime   @default(now())\n  updatedAt          DateTime   @updatedAt\n  sessions           Session[]\n  accounts           Account[]\n  patient            Patient?\n  doctor             Doctor?\n\n  @@unique([email])\n  @@map(\"user\")\n}\n\nmodel Session {\n  id        String   @id\n  expiresAt DateTime\n  token     String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@unique([token])\n  @@index([userId])\n  @@map(\"session\")\n}\n\nmodel Account {\n  id                    String    @id\n  accountId             String\n  providerId            String\n  userId                String\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n\n  @@index([userId])\n  @@map(\"account\")\n}\n\nmodel Verification {\n  id         String   @id\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@index([identifier])\n  @@map(\"verification\")\n}\n\nmodel Doctor {\n  id String @id @default(uuid(7))\n\n  name          String\n  email         String    @unique\n  profilePhoto  String?\n  contactNumber String?\n  address       String?\n  isDeleted     Boolean   @default(false)\n  deletedAt     DateTime?\n\n  registrationNumber  String @unique\n  experience          Int    @default(0)\n  gender              Gender\n  appointmentFee      Float\n  qualification       String\n  currentWorkingPlace String\n  designation         String\n  averageRating       Float  @default(0.0)\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  //relations\n\n  userId      String            @unique\n  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  specialties DoctorSpecialty[]\n\n  @@index([email], name: \"idx_doctor_email\")\n  @@index([isDeleted], name: \"idx_doctor_isDeleted\")\n  @@map(\"doctor\")\n}\n\nenum Role {\n  SUPER_ADMIN\n  ADMIN\n  DOCTOR\n  PATIENT\n}\n\nenum UserStatus {\n  BLOCKED\n  DELETED\n  ACTIVE\n}\n\nenum Gender {\n  MALE\n  FEMALE\n}\n\nmodel Patient {\n  id String @id @default(uuid(7))\n\n  name          String\n  email         String    @unique\n  profilePhoto  String?\n  contactNumber String?\n  address       String?\n  isDeleted     Boolean   @default(false)\n  deletedAt     DateTime?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n\n  //relations\n\n  userId String @unique\n  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  @@index([email], name: \"idx_patient_email\")\n  @@index([isDeleted], name: \"idx_patient_isDeleted\")\n  @@map(\"patient\")\n}\n\ngenerator client {\n  provider = \"prisma-client\"\n  output   = \"../../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Specialty {\n  id String @id @default(uuid(7))\n\n  title       String  @unique @db.VarChar(100)\n  description String? @db.Text\n  icon        String? @db.VarChar(255)\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  isDeleted         Boolean           @default(false)\n  deletedAt         DateTime?\n  doctorSpecialties DoctorSpecialty[]\n\n  @@index([isDeleted], name: \"idx_specialty_isDeleted\")\n  @@index([title], name: \"idx_specialty_title\")\n  @@map(\"specialties\")\n}\n\nmodel DoctorSpecialty {\n  id          String @id @default(uuid(7))\n  doctorId    String\n  specialtyId String\n\n  doctor    Doctor    @relation(fields: [doctorId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n  specialty Specialty @relation(fields: [specialtyId], references: [id], onDelete: Cascade, onUpdate: Cascade)\n\n  @@unique([doctorId, specialtyId])\n  @@index([doctorId], name: \"idx_doctor_specialty_doctorId\")\n  @@index([specialtyId], name: \"idx_doctor_specialty_specialtyId\")\n  @@map(\"doctor_specialties\")\n}\n",
   "runtimeDataModel": {
@@ -67,7 +67,13 @@ export interface PrismaClientConstructor {
    * Type-safe database client for TypeScript
    * @example
    * ```
+<<<<<<< HEAD
    * const prisma = new PrismaClient()
+=======
+   * const prisma = new PrismaClient({
+   *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+   * })
+>>>>>>> b244aa3f5837ad3ade11de1c7068dca793bc86d6
    * // Fetch zero or more Users
    * const users = await prisma.user.findMany()
    * ```
@@ -89,7 +95,13 @@ export interface PrismaClientConstructor {
  * Type-safe database client for TypeScript
  * @example
  * ```
+<<<<<<< HEAD
  * const prisma = new PrismaClient()
+=======
+ * const prisma = new PrismaClient({
+ *   adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL })
+ * })
+>>>>>>> b244aa3f5837ad3ade11de1c7068dca793bc86d6
  * // Fetch zero or more Users
  * const users = await prisma.user.findMany()
  * ```

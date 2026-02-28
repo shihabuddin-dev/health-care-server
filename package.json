@@ -18,18 +18,17 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.24.0",
+  "packageManager": "pnpm@10.30.3",
   "type": "module",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@prisma/adapter-pg": "^7.4.1",
-    "@prisma/client": "^7.4.1",
     "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/ms": "^2.1.0",
     "@types/node": "^25.3.0",
     "@types/pg": "^8.16.0",
     "dotenv": "^17.3.1",
     "eslint": "^10.0.2",
-    "pg": "^8.18.0",
     "prisma": "^7.4.1",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
@@ -37,8 +36,10 @@
     "typescript-eslint": "^8.56.1"
   },
   "dependencies": {
-    "better-auth": "^1.4.19",
+    "@prisma/adapter-pg": "^7.4.1",
+    "@prisma/client": "^7.4.1",
+    "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "http-status": "^2.1.0"
+    "pg": "^8.18.0"
   }
 }
