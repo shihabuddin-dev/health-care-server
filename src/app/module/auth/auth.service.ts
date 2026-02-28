@@ -36,6 +36,8 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
       });
       return patientTx;
     });
+    return {
+      ...data,
 
     const accessToken = tokenUtils.getAccessToken({
         userId: data.user.id,
@@ -93,6 +95,7 @@ const loginUser = async (payload: ILoginPayload) => {
     throw new Error("User is Deleted");
   }
 
+  return data;
 const accessToken = tokenUtils.getAccessToken({
         userId: data.user.id,
         role: data.user.role,
