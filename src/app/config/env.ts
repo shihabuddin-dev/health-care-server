@@ -49,10 +49,10 @@ const loadEnvVariables = (): EnvConfig => {
         'EMAIL_SENDER_SMTP_HOST',
         'EMAIL_SENDER_SMTP_PORT',
         'EMAIL_SENDER_SMTP_FROM',
-        // 'GOOGLE_CLIENT_ID',
-        // 'GOOGLE_CLIENT_SECRET',
-        // 'GOOGLE_CALLBACK_URL',
-        // 'FRONTEND_URL'
+        'GOOGLE_CLIENT_ID',
+        'GOOGLE_CLIENT_SECRET',
+        'GOOGLE_CALLBACK_URL',
+        'FRONTEND_URL'
     ]
 
     requireEnvVariable.forEach((variable) => {
