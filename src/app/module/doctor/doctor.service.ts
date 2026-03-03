@@ -4,6 +4,7 @@ import AppError from "../../errorHelpers/AppError";
 import { prisma } from "../../lib/prisma";
 import { IUpdateDoctorPayload } from "./doctor.interface";
 
+// /doctors?specialty=cardiology&include=doctorSchedules,appointments
 const getAllDoctors = async () => {
     const doctors = await prisma.doctor.findMany({
         where: {
@@ -18,6 +19,7 @@ const getAllDoctors = async () => {
             }
         }
     })
+    // const query= new QueryBuilder().paginate().search().filter()
     return doctors;
 }
 
