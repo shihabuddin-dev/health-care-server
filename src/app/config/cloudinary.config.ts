@@ -1,7 +1,7 @@
-import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
-import { envVars } from './env';
-import AppError from '../errorHelpers/AppError';
-import status from 'http-status';
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
+import status from "http-status";
+import AppError from "../errorHelpers/AppError";
+import { envVars } from "./env";
 
 cloudinary.config({
     cloud_name: envVars.CLOUDINARY.CLOUDINARY_CLOUD_NAME,
@@ -9,7 +9,7 @@ cloudinary.config({
     api_secret: envVars.CLOUDINARY.CLOUDINARY_API_SECRET,
 })
 
-export const uploadFileToCloudinary = async()=>(
+export const uploadFileToCloudinary = async (
     buffer : Buffer,
     fileName: string,
 ) : Promise<UploadApiResponse> =>{
@@ -58,10 +58,13 @@ export const uploadFileToCloudinary = async()=>(
 
 }
 
-export const deleteFileFromCloudinary = async (url : string) =>{
+export const deleteFileFromCloudinary = async (url : string) => {
+
     try {
-         const regex = /\/v\d+\/(.+?)(?:\.[a-zA-Z0-9]+)+$/;
+        const regex = /\/v\d+\/(.+?)(?:\.[a-zA-Z0-9]+)+$/;
+
         const match = url.match(regex);
+
         if (match && match[1]) {
             const publicId = match[1];
 
@@ -70,6 +73,7 @@ export const deleteFileFromCloudinary = async (url : string) =>{
                 resource_type: "image"
             }
             )
+
             console.log(`File ${publicId} deleted from cloudinary`);
         }
 
@@ -78,5 +82,6 @@ export const deleteFileFromCloudinary = async (url : string) =>{
         throw new AppError(status.INTERNAL_SERVER_ERROR, "Failed to delete file from Cloudinary");
     }
 }
+
 
 export const cloudinaryUpload = cloudinary;

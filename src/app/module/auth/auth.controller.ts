@@ -2,13 +2,13 @@ import { Request, Response } from "express";
 import status from "http-status";
 import ms, { StringValue } from "ms";
 import { envVars } from "../../config/env";
+import AppError from "../../errorHelpers/AppError";
+import { auth } from "../../lib/auth";
 import { catchAsync } from "../../shared/catchAsync";
 import { sendResponse } from "../../shared/sendResponse";
+import { CookieUtils } from "../../utils/cookie";
 import { tokenUtils } from "../../utils/token";
 import { AuthService } from "./auth.service";
-import AppError from "../../errorHelpers/AppError";
-import { CookieUtils } from "../../utils/cookie";
-import { auth } from "../../lib/auth";
 
 const registerPatient = catchAsync(
     async (req: Request, res: Response) => {
@@ -65,17 +65,19 @@ const loginUser = catchAsync(
     }
 )
 
-const getMe= catchAsync(async(req: Request, res: Response) => {
-    const user= req.user 
-    console.log({user});
-    const result= await AuthService.getMe(user)
-    sendResponse(res,{
-        httpStatusCode: status.OK,
-        success: true,
-        message: "User Profile fetched successfully",
-        data: result
-    })
-})
+const getMe = catchAsync(
+    async (req: Request, res: Response) => {
+        const user = req.user;
+        console.log({user});
+        const result = await AuthService.getMe(user);
+        sendResponse(res, {
+            httpStatusCode: status.OK,
+            success: true,
+            message: "User profile fetched successfully",
+            data: result,
+        })
+    }
+)
 
 const getNewToken = catchAsync(
     async (req: Request, res: Response) => {
@@ -127,7 +129,6 @@ const changePassword = catchAsync(
     }
 )
 
-
 const logoutUser = catchAsync(
     async (req: Request, res: Response) => {
         const betterAuthSessionToken = req.cookies["better-auth.session_token"];
@@ -161,6 +162,7 @@ const verifyEmail = catchAsync(
     async (req: Request, res: Response) => {
         const { email, otp } = req.body;
         await AuthService.verifyEmail(email, otp);
+
         sendResponse(res, {
             httpStatusCode: status.OK,
             success: true,
@@ -168,7 +170,6 @@ const verifyEmail = catchAsync(
         });
     }
 )
-
 
 const forgetPassword = catchAsync(
     async (req: Request, res: Response) => {
@@ -252,8 +253,6 @@ const handleOAuthError = catchAsync((req: Request, res: Response) => {
     res.redirect(`${envVars.FRONTEND_URL}/login?error=${error}`);
 })
 
-
-
 export const AuthController = {
     registerPatient,
     loginUser,
@@ -264,10 +263,7 @@ export const AuthController = {
     verifyEmail,
     forgetPassword,
     resetPassword,
-    googleLoginSuccess,
     googleLogin,
-    handleOAuthError
-
-    
-
+    googleLoginSuccess,
+    handleOAuthError,
 };

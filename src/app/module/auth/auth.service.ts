@@ -1,20 +1,16 @@
-import { envVars } from './../../config/env';
 import status from "http-status";
+import { JwtPayload } from "jsonwebtoken";
 import { UserStatus } from "../../../generated/prisma/enums";
+import { envVars } from "../../config/env";
 import AppError from "../../errorHelpers/AppError";
+import { IRequestUser } from "../../interfaces/requestUser.interface";
 import { auth } from "../../lib/auth";
 import { prisma } from "../../lib/prisma";
+import { jwtUtils } from "../../utils/jwt";
 import { tokenUtils } from "../../utils/token";
-import { IRequestUser } from "../../interfaces/requestUser.interface";
-import { jwtUtils } from '../../utils/jwt';
-import { JwtPayload } from 'jsonwebtoken';
-import { IChangePasswordPayload } from './auth.interface';
+import { IChangePasswordPayload, ILoginUserPayload, IRegisterPatientPayload } from "./auth.interface";
 
-interface IRegisterPatientPayload {
-    name: string;
-    email: string;
-    password: string;
-}
+
 
 const registerPatient = async (payload: IRegisterPatientPayload) => {
     const { name, email, password } = payload;
@@ -89,10 +85,6 @@ const registerPatient = async (payload: IRegisterPatientPayload) => {
 
 }
 
-interface ILoginUserPayload {
-    email: string;
-    password: string;
-}
 
 const loginUser = async (payload: ILoginUserPayload) => {
     const { email, password } = payload;
@@ -140,12 +132,12 @@ const loginUser = async (payload: ILoginUserPayload) => {
 
 }
 
-const getMe= async(user:IRequestUser)=>{
+const getMe = async (user : IRequestUser) => {
     const isUserExists = await prisma.user.findUnique({
-        where: {
-            id: user.userId
+        where : {
+            id : user.userId,
         },
-        include:{
+        include : {
             patient : {
                 include : {
                     appointments : true,
@@ -163,20 +155,20 @@ const getMe= async(user:IRequestUser)=>{
                     prescriptions : true,
                 }
             },
-            admin: true
+            admin : true,
         }
     })
 
-     if (!isUserExists) {
+    if (!isUserExists) {
         throw new AppError(status.NOT_FOUND, "User not found");
     }
 
     return isUserExists;
-
 }
 
-const getNewToken = async (refreshToken: string, sessionToken: string) => {
-       const isSessionTokenExists = await prisma.session.findUnique({
+const getNewToken = async (refreshToken : string, sessionToken : string) => {
+
+    const isSessionTokenExists = await prisma.session.findUnique({
         where : {
             token : sessionToken,
         },
@@ -188,7 +180,10 @@ const getNewToken = async (refreshToken: string, sessionToken: string) => {
     if(!isSessionTokenExists){
         throw new AppError(status.UNAUTHORIZED, "Invalid session token");
     }
-    const verifiedRefreshToken = jwtUtils.verifyToken(refreshToken, envVars.REFRESH_TOKEN_SECRET);
+
+    const verifiedRefreshToken = jwtUtils.verifyToken(refreshToken, envVars.REFRESH_TOKEN_SECRET)
+
+
     if(!verifiedRefreshToken.success && verifiedRefreshToken.error){
         throw new AppError(status.UNAUTHORIZED, "Invalid refresh token");
     }
@@ -214,7 +209,8 @@ const getNewToken = async (refreshToken: string, sessionToken: string) => {
         isDeleted: data.isDeleted,
         emailVerified: data.emailVerified,
     });
-        const {token} = await prisma.session.update({
+
+    const {token} = await prisma.session.update({
         where : {
             token : sessionToken
         },
@@ -225,13 +221,12 @@ const getNewToken = async (refreshToken: string, sessionToken: string) => {
         }
     })
 
-
-    return{
+    return {
         accessToken : newAccessToken,
         refreshToken : newRefreshToken,
-         sessionToken : token,
+        sessionToken : token,
     }
-  
+
 }
 
 const changePassword = async (payload : IChangePasswordPayload, sessionToken : string) =>{
@@ -327,7 +322,6 @@ const verifyEmail = async (email : string, otp : string) => {
         })
     }
 }
-
 
 const forgetPassword = async (email : string) => {
     const isUserExist = await prisma.user.findUnique({
@@ -447,6 +441,5 @@ export const AuthService = {
     verifyEmail,
     forgetPassword,
     resetPassword,
-googleLoginSuccess
-
+    googleLoginSuccess,
 };

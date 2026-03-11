@@ -161,7 +161,7 @@ const getMyAppointments = async (user: IRequestUser) => {
 }
 
 // 1. Completed Or Cancelled Appointments should not be allowed to update status
-// 2. Doctors can only update Appointment status from schedule to inprogress or inprogress to completed or schedule to cancelled.
+// 2. Doctors can only update Appoinment status from schedule to inprogress or inprogress to complted or schedule to cancelled.
 // 3. Patients can only cancel the scheduled appointment if it scheduled not completed or cancelled or inprogress. 
 // 4. Admin and Super admin can update to any status.
 
@@ -363,36 +363,35 @@ const initiatePayment = async (appointmentId: string, user : IRequestUser) => {
         throw new AppError(status.BAD_REQUEST, "Appointment is canceled");
     }
 
-    // const session = await stripe.checkout.sessions.create({
-    //     payment_method_types: ["card"],
-    //     mode: 'payment',
-    //     line_items: [
-    //         {
-    //             price_data: {
-    //                 currency: "bdt",
-    //                 product_data: {
-    //                     name: `Appointment with Dr. ${appointmentData.doctor.name}`,
-    //                 },
-    //                 unit_amount: appointmentData.doctor.appointmentFee * 100,
-    //             },
-    //             quantity: 1,
-    //         }
-    //     ],
-    //     metadata: {
-    //         appointmentId: appointmentData.id,
-    //         paymentId: appointmentData.payment.id,
-    //     },
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        mode: 'payment',
+        line_items: [
+            {
+                price_data: {
+                    currency: "bdt",
+                    product_data: {
+                        name: `Appointment with Dr. ${appointmentData.doctor.name}`,
+                    },
+                    unit_amount: appointmentData.doctor.appointmentFee * 100,
+                },
+                quantity: 1,
+            }
+        ],
+        metadata: {
+            appointmentId: appointmentData.id,
+            paymentId: appointmentData.payment.id,
+        },
 
-    //     success_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-success?appointment_id=${appointmentData.id}&payment_id=${appointmentData.payment.id}`,
+        success_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-success?appointment_id=${appointmentData.id}&payment_id=${appointmentData.payment.id}`,
 
-    //     // cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-failed`,
-    //     cancel_url: `${envVars.FRONTEND_URL}/dashboard/appointments?error=payment_cancelled`,
-    // })
+        // cancel_url: `${envVars.FRONTEND_URL}/dashboard/payment/payment-failed`,
+        cancel_url: `${envVars.FRONTEND_URL}/dashboard/appointments?error=payment_cancelled`,
+    })
 
-    // return {
-    //     paymentUrl: session.url,
-    // }
-    return appointmentData
+    return {
+        paymentUrl: session.url,
+    }
 }
 
 const cancelUnpaidAppointments = async () => {
